@@ -1,3 +1,10 @@
+# Задача 5. Траектория для маятника
+# обеспечить переход двухзвенного маятника в заданное декартово положение за счет вычисления необходимого положения джоинтов
+# через p.calculateInverseKinematics в режиме POSITION_CONTROL
+
+
+
+
 import pybullet as p
 import time
 import pybullet_data
@@ -78,7 +85,6 @@ for t in logTime:
         endEffectorLinkIndex=4, # индекс звена
         targetPosition=targetPos, # целевая точка, куда должен попасть конец манипулятора
     )
-
 
 
     p.setJointMotorControlArray(
