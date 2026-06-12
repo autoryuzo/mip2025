@@ -61,11 +61,30 @@ logXsim = np.zeros(sz)
 logZsim = np.zeros(sz)
 idx = 0
 T = 2
+
+error_log = []
+eps = 0.01
+
 for t in logTime:
 
     pos = p.getLinkState(boxId, 4)[0] # текущая позиция
-    logXsim[idx] = pos[0]
-    logZsim[idx] = pos[2]
+
+    x = pos[0]
+    z = pos[2]
+
+    logXsim[idx] = x
+    logZsim[idx] = z
+
+    error = np.linalg.norm([
+        x - xd,
+        z - zd
+    ])
+
+    error_log.append(error)
+
+    if error < eps:
+        print(f"reached at t = {t:.2f} s, error = {error:.6f}")
+        break
 
     Xd = np.array([[xd],[zd]]) # цель, финальная точка
 
@@ -100,8 +119,32 @@ for t in logTime:
         time.sleep(dt)
 p.disconnect()
 
+# обрезка массивов
+logXsim = logXsim[:idx]
+logZsim = logZsim[:idx]
+logTime = logTime[:idx]
+
+plt.figure()
+
 plt.subplot(2,1,1)
-plt.plot(logTime, logXsim)
+plt.plot(logTime, logXsim, label= "x")
+plt.legend()
 plt.subplot(2,1,2)
-plt.plot(logTime, logZsim)
+plt.plot(logTime, logZsim, label= "z")
+plt.legend()
 plt.show()
+
+# траектория
+plt.figure()
+plt.plot(logXsim, logZsim, label="trajectory")
+plt.plot(xd, zd, 'ro', label="target")
+plt.xlabel("X")
+plt.ylabel("Z")
+plt.grid()
+plt.legend()
+plt.show()
+
+print("\nRESULT:")
+print("target:", [xd, zd])
+print("final :", [logXsim[-1], logZsim[-1]])
+print("final error:", error_log[-1])
